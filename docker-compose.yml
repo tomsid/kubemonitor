@@ -1,0 +1,21 @@
+version: "2"
+services:
+  kubernetes:
+    image: gcr.io/google_containers/hyperkube-amd64:v1.2.4
+    volumes:
+      - /:/rootfs:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:rw
+      - /var/lib/kubelet/:/var/lib/kubelet:rw
+      - /var/run:/var/run:rw
+    network_mode: "host"
+    pid: "host"
+    privileged: true
+    container_name: kubelet
+    command: /hyperkube kubelet --containerized --hostname-override="127.0.0.1" --address="0.0.0.0" --api-servers=http://localhost:8080 --config=/etc/kubernetes/manifests --cluster-dns=10.0.0.10 --cluster-domain=cluster.local --allow-privileged=true --v=2
+  kubemonitor:
+    image: tomsid/kubemonitor:v1
+    container_name: kubemonitor
+    network_mode: "host"
+    ports:
+      - "9091:9091"
